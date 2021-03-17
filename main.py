@@ -67,7 +67,32 @@ Cor: {cor}
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
 def alterar_proprietario():
-    print('altera')
+    placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
+    placa = str(verificar_placa_existe(numero_placa=placa)).upper()
+    cnh_novo = str(input('CNH do novo proprietário: ')).strip()
+    cnh_novo = str(verificar_cnh_existe(numero_cnh=cnh_novo))
+
+    print(f'''
+Verifique as informações.
+Placa: {placa}
+CNH: {cnh_novo}
+Dados obtidos pela placa: {veiculos[f'{placa}']}
+Dados obtidos pelo CNH: {motoristas[f'{cnh_novo}']}
+            ''')
+
+    resposta = receber_resposta(
+        'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
+        opcoes=['1', '2'])
+    if resposta == '1':
+        cnh_alterado = {f'{placa}' : (f'{cnh_novo}', veiculos[f'{placa}'][1], veiculos[f'{placa}'][2])}
+        veiculos.update(cnh_alterado)
+        novos_dados = [motoristas, veiculos, infracoes, naturezas]
+        criar_bin(nome_arquivo='multas.bin', dados=novos_dados)
+    elif resposta == '2':
+        alterar_proprietario()
+    else:
+        print('Ocorreu um erro inesperado, por favor tente novamente')
+
 
 
 def cadastrar_infracao():
@@ -143,6 +168,56 @@ def verificar_cnh(numero_cnh):
         return numero_cnh
 
 
+def verificar_cnh_existe(numero_cnh):
+    cnh_existe = False
+    for key in motoristas:
+        if str(numero_cnh) == str(key):
+            cnh_existe = True
+            break
+        else:
+            cnh_existe = False
+
+    while not cnh_existe:
+        print('!!!Esse número de CNH NÃO está cadastrado!!!')
+        novo_numero_cnh = str(input('Digite um número de CNH existente: ')).strip().upper()
+        for key in motoristas:
+            if str(novo_numero_cnh) == str(key):
+                cnh_existe = True
+                break
+            else:
+                cnh_existe = False
+
+        if cnh_existe:
+            return novo_numero_cnh
+    else:
+        return numero_cnh
+
+def verificar_placa_existe(numero_placa):
+    placa_existe = False
+    novo_numero_placa = ''
+    for key in veiculos:
+        if str(numero_placa) == str(key):
+            placa_existe = True
+            break
+        else:
+            placa_existe = False
+
+    while not placa_existe:
+        print('!!!Essa placa NÃO está cadastrada!!!')
+        novo_numero_placa = str(input('Digite uma placa existente: ')).strip().upper()
+        for key in veiculos:
+            if str(novo_numero_placa) == str(key):
+                placa_existe = True
+                break
+            else:
+                placa_existe = False
+
+        if placa_existe:
+            return novo_numero_placa
+    else:
+        return numero_placa
+
+
 def receber_resposta(pergunta=str(), opcoes=list()):
     resposta = str(input(pergunta)).strip()
     while resposta not in opcoes:
@@ -193,4 +268,5 @@ naturezas = dados[3]
 mostrar_menu()
 #for f in dados:
 #    print(f)
+
 
