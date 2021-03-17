@@ -1,33 +1,50 @@
 import pickle
 
 
-#Modulos que utilizarei
+#Modulos
 def criar_bin(nome_arquivo, dados):
+    '''
+    Função para criar o arquivo binario (.bin) a partir de uma lista de dados
+    :param nome_arquivo: nome do arquivo .bin que vai ser criado
+    :param dados: conjunto de listas ou dicionarios
+    '''
     with open(f'{nome_arquivo}', 'wb') as f:
         pickle.dump(dados, f, pickle.HIGHEST_PROTOCOL)
 
     print(f'O arquivo {nome_arquivo} foi atualizado com sucesso!')
 
+
 def carregar_bin(nome_arquivo):
+    '''
+    Serve para carregar os dados de um arquivo binario (.bin) para serem manipulados
+    :param nome_arquivo: nome do arquivo que vai ser carregado
+    :return: o conjunto de arquivos em forma de lista
+    '''
     with open(f'{nome_arquivo}', 'rb') as f:
         dados_bin = pickle.load(f)
         return dados_bin
 
+
 def cadastrar_motorista():
+    '''
+    Função para cadastrar um motorista
+    '''
+    #Recebendo Dados
     nome = str(input('Cadastrar novo motorista:\nNome: ')).strip()
     cnh = str(input('CNH: ')).strip()
-    cnh = str(verificar_cnh(numero_cnh=cnh))
+    cnh = str(verificar_cnh_disponivel(numero_cnh=cnh))
     dia = str(input('Data de Nascimento:\n-Dia: ')).strip()
     mes = str(input('-Mês: ')).strip()
     ano = str(input('-Ano: ')).strip()
     data_nascimento = (dia, mes, ano)
+    #Verificação por parte do usuário
     print(f'''
 Verifique as informações.
 Nome: {nome}
 CNH: {cnh}
 Data de Nascimento: {data_nascimento}
     ''')
-
+    #Salvar ou não os dados recebidos
     resposta = receber_resposta('Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->', opcoes= ['1', '2'])
     if resposta == '1':
         motoristas[f'{cnh}'] = (f'{nome}', data_nascimento)
@@ -40,13 +57,18 @@ Data de Nascimento: {data_nascimento}
 
 
 def cadastrar_veiculo():
+    '''
+    Função para cadastrar um novo veículo
+    '''
+    #Recebendo dados
     modelo = str(input('Cadastrar um novo veículo:\nModelo: ')).strip()
     placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
-    placa = str(verificar_placa(numero_placa=placa)).upper()
+    placa = str(verificar_placa_disponivel(numero_placa=placa)).upper()
     print(placa)
     cnh_dono = str(input('CNH: ')).strip()
     cnh_dono = str(verificar_cnh_existe(numero_cnh=cnh_dono))
     cor = str(input('Cor do veículo: '))
+    #Verificação dos dados por parte do usuário
     print(f'''
 Verifique as informações.
 Modelo: {modelo}
@@ -54,7 +76,7 @@ Placa: {placa}
 CNH do Proprietário: {cnh_dono}
 Cor: {cor}
         ''')
-
+    #Salvar ou não os dados recebidos
     resposta = receber_resposta(
         'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
         opcoes=['1', '2'])
@@ -67,12 +89,17 @@ Cor: {cor}
     else:
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
+
 def alterar_proprietario():
+    '''
+    Função para alterar o proprietário de um veículo
+    '''
+    #Recebendo dados
     placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
     placa = str(verificar_placa_existe(numero_placa=placa)).upper()
     cnh_novo = str(input('CNH do novo proprietário: ')).strip()
     cnh_novo = str(verificar_cnh_existe(numero_cnh=cnh_novo))
-
+    #Verificação dos dados feita pelo usuário
     print(f'''
 Verifique as informações.
 Placa: {placa}
@@ -80,7 +107,7 @@ CNH: {cnh_novo}
 Dados obtidos pela placa: {veiculos[f'{placa}']}
 Dados obtidos pelo CNH: {motoristas[f'{cnh_novo}']}
 ''')
-
+    #Salvar ou não os dados recebidos
     resposta = receber_resposta(
         'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
         opcoes=['1', '2'])
@@ -95,8 +122,11 @@ Dados obtidos pelo CNH: {motoristas[f'{cnh_novo}']}
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
 
-
 def cadastrar_infracao():
+    '''
+    Função pra cadastrar infração
+    '''
+    #Recebendo dados
     numero_infracao = infracoes[-1][0] + 1
     dia = str(input('Data da Infração:\n-Dia: ')).strip()
     mes = str(input('-Mês: ')).strip()
@@ -106,7 +136,7 @@ def cadastrar_infracao():
     placa_infracao = str(verificar_placa_existe(numero_placa=placa_infracao)).upper()
     resposta = receber_resposta(pergunta='Qual a natureza da infração que você está denunciando?\n1- Leve\n2- Média\n3- Grave\n4- Gravíssima\n->', opcoes=['1','2','3','4'])
     natureza_infracao = descobrir_natureza(opcao=resposta)
-
+    # Verificação dos dados feita pelo usuário
     print(f'''
     Verifique as informações.
     Numero da infração: {numero_infracao}
@@ -115,7 +145,7 @@ def cadastrar_infracao():
     Dados obtidos pela placa: {veiculos[f'{placa_infracao}']}
     Natureza da infração: {natureza_infracao}
     ''')
-
+    #Salvar ou não os dados recebidos
     resposta = receber_resposta(
         'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
         opcoes=['1', '2'])
@@ -128,7 +158,11 @@ def cadastrar_infracao():
     else:
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
+
 def valores_padroes():
+    '''
+    Cria um arquivo binário(.bin) somente os primeiros valores inseridos pelo Enzo
+    '''
     #Dados já castrados pelo Enzo
     motoristas = {"01234567" : ("Seu Madruga", (15,10,2019)),
                   "12345678" : ("Dona Florinda", (14,10,2019))}
@@ -145,16 +179,23 @@ def valores_padroes():
     #Colocar os dados dentro de um arquivo binário
     criar_bin(nome_arquivo='multas.bin', dados=dados_cadastratos)
 
-def verificar_placa(numero_placa):
+
+def verificar_placa_disponivel(numero_placa):
+    '''
+    Função que verifica se a placa já foi cadastrada
+    :param numero_placa: codigo da nova placa inserido pelo usuario
+    :return: uma string com o valor de uma placa válida ainda não registrada
+    '''
     placa_duplicada = False
     novo_numero_placa = ''
+    #Procura se ja existe uma placa com esse codigo
     for key in veiculos:
         if str(numero_placa) == str(key):
             placa_duplicada = True
             break
         else:
             placa_duplicada = False
-
+    #Pede pro usuario digitar uma placa ate ser uma sem cadastro
     while placa_duplicada:
         print('!!!Essa placa já está cadastrada!!!')
         novo_numero_placa = str(input('Digite uma placa válida: ')).strip().upper()
@@ -170,17 +211,23 @@ def verificar_placa(numero_placa):
     else:
         return numero_placa
 
-def verificar_cnh(numero_cnh):
 
+def verificar_cnh_disponivel(numero_cnh):
+    '''
+    Função pra verificar se a cnh ja foi cadastrada
+    :param numero_cnh: numero do novo cnh inserido pelo usuario
+    :return: string com o número de uma cnh que ainda não foi registrada
+    '''
     cnh_duplicada = False
     novo_numero_cnh = ''
+    #Pesquisa se já existe esse cnh registrado
     for key in motoristas:
         if str(numero_cnh) == str(key):
             cnh_duplicada = True
             break
         else:
             cnh_duplicada = False
-
+    #Pede pro usuario digitar um cnh ate ser um sem cadastro
     while cnh_duplicada:
         print('!!!Esse número de CNH já foi cadastrado!!!')
         novo_numero_cnh = str(input('Digite uma CNH válida: ')).strip()
@@ -198,14 +245,20 @@ def verificar_cnh(numero_cnh):
 
 
 def verificar_cnh_existe(numero_cnh):
+    '''
+    Função para verificar se o cnh existe
+    :param numero_cnh: numero do cnh inserido pelo usuario
+    :return: string com um número de cnh válido que está cadastrado
+    '''
     cnh_existe = False
+    #Pesquisa se esse cnh existe
     for key in motoristas:
         if str(numero_cnh) == str(key):
             cnh_existe = True
             break
         else:
             cnh_existe = False
-
+    #Pede pro usuario digitar um cnh ate ser um cadastrado
     while not cnh_existe:
         print('!!!Esse número de CNH NÃO está cadastrado!!!')
         novo_numero_cnh = str(input('Digite um número de CNH existente: ')).strip().upper()
@@ -221,16 +274,23 @@ def verificar_cnh_existe(numero_cnh):
     else:
         return numero_cnh
 
+
 def verificar_placa_existe(numero_placa):
+    '''
+    Função para verificar se a placa existe
+    :param numero_placa: codigo da placa inserida pelo usuario
+    :return: string com o codigo de uma placa que está cadastrada
+    '''
     placa_existe = False
     novo_numero_placa = ''
+    #Pesquisa se essa placa existe
     for key in veiculos:
         if str(numero_placa) == str(key):
             placa_existe = True
             break
         else:
             placa_existe = False
-
+    #Pede pro usuario digitar uma placa ate ser uma cadastrada
     while not placa_existe:
         print('!!!Essa placa NÃO está cadastrada!!!')
         novo_numero_placa = str(input('Digite uma placa existente: ')).strip().upper()
@@ -246,7 +306,13 @@ def verificar_placa_existe(numero_placa):
     else:
         return numero_placa
 
+
 def descobrir_natureza(opcao=str()):
+    '''
+    Função para descobrir a natureza da infracao
+    :param opcao: opcao escolhida pelo usuario
+    :return: string com algum desses valores [Leve, Grave, Media ou Gravissima]
+    '''
     if opcao == '1':
         return 'Leve'
     elif opcao == '2':
@@ -258,7 +324,14 @@ def descobrir_natureza(opcao=str()):
     else:
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
+
 def receber_resposta(pergunta=str(), opcoes=list()):
+    '''
+    Função para verificar as repostas para evitar opções invalidas
+    :param pergunta: pergunta que sera feita ao usuário
+    :param opcoes: respostas que podem ser aceitas
+    :return: string com a opção que o usuario escolheu
+    '''
     resposta = str(input(pergunta)).strip()
     while resposta not in opcoes:
         print('ESCOLHA UMA OPÇÃO VÁLIDA!!')
@@ -268,6 +341,9 @@ def receber_resposta(pergunta=str(), opcoes=list()):
 
 
 def mostrar_menu():
+    '''
+    Função que imprime o menu e mostra as opções
+    '''
     print('!!!BEM-VINDO!!!')
     print('Selecione alguma opção abaixo:')
     print('''
@@ -295,15 +371,19 @@ def mostrar_menu():
 
 
 def ver_dados(arquivo=list()):
+    '''
+    Função que print todos os dados extraidos do arquivo .bin
+    :param arquivo: uma lista com os valores que foram extraidos anteriormente
+    '''
     for dado in arquivo:
         print(dado)
 
+#inicio do programa
 
-
-#Lendo os dados de um arquivo binário
+#Lendo os dados armazenados no arquivo binário
 dados = carregar_bin(nome_arquivo='multas.bin')
 
-#Separando os dados retirandos do .bin
+#Separando os dados retirandos do arquivo binário
 motoristas = dados[0]
 veiculos = dados[1]
 infracoes = dados[2]
@@ -311,6 +391,7 @@ naturezas = dados[3]
 
 
 mostrar_menu()
+
+#Utilizadas para controle
 #valores_padroes()
 #ver_dados(dados)
-
