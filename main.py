@@ -44,7 +44,8 @@ def cadastrar_veiculo():
     placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
     placa = str(verificar_placa(numero_placa=placa)).upper()
     print(placa)
-    cnh_dono = str(input('CNH do proprietário: ')).strip()
+    cnh_dono = str(input('CNH: ')).strip()
+    cnh_dono = str(verificar_cnh_existe(numero_cnh=cnh_dono))
     cor = str(input('Cor do veículo: '))
     print(f'''
 Verifique as informações.
@@ -78,7 +79,7 @@ Placa: {placa}
 CNH: {cnh_novo}
 Dados obtidos pela placa: {veiculos[f'{placa}']}
 Dados obtidos pelo CNH: {motoristas[f'{cnh_novo}']}
-            ''')
+''')
 
     resposta = receber_resposta(
         'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
@@ -96,8 +97,36 @@ Dados obtidos pelo CNH: {motoristas[f'{cnh_novo}']}
 
 
 def cadastrar_infracao():
-    print('intra')
+    numero_infracao = infracoes[-1][0] + 1
+    dia = str(input('Data da Infração:\n-Dia: ')).strip()
+    mes = str(input('-Mês: ')).strip()
+    ano = str(input('-Ano: ')).strip()
+    data_infracao = (dia, mes, ano)
+    placa_infracao = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
+    placa_infracao = str(verificar_placa_existe(numero_placa=placa_infracao)).upper()
+    resposta = receber_resposta(pergunta='Qual a natureza da infração que você está denunciando?\n1- Leve\n2- Média\n3- Grave\n4- Gravíssima\n->', opcoes=['1','2','3','4'])
+    natureza_infracao = descobrir_natureza(opcao=resposta)
 
+    print(f'''
+    Verifique as informações.
+    Numero da infração: {numero_infracao}
+    Data: {data_infracao}
+    Placa: {placa_infracao}
+    Dados obtidos pela placa: {veiculos[f'{placa_infracao}']}
+    Natureza da infração: {natureza_infracao}
+    ''')
+
+    resposta = receber_resposta(
+        'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
+        opcoes=['1', '2'])
+    if resposta == '1':
+        infracoes.append([numero_infracao, data_infracao, f'{placa_infracao}', f'{natureza_infracao}'])
+        novos_dados = [motoristas, veiculos, infracoes, naturezas]
+        criar_bin(nome_arquivo='multas.bin', dados=novos_dados)
+    elif resposta == '2':
+        cadastrar_infracao()
+    else:
+        print('Ocorreu um erro inesperado, por favor tente novamente')
 
 def valores_padroes():
     #Dados já castrados pelo Enzo
@@ -111,8 +140,8 @@ def valores_padroes():
                 (3,(17,10,2018),"ALE 2014","Leve")]
     naturezas = {"Leve" : 3, "Media" : 4,
                 "Grave" : 5, "Gravissima" : 7}
-    dados_cadastratos = [motoristas, veiculos, infracoes, naturezas]
 
+    dados_cadastratos = [motoristas, veiculos, infracoes, naturezas]
     #Colocar os dados dentro de um arquivo binário
     criar_bin(nome_arquivo='multas.bin', dados=dados_cadastratos)
 
@@ -217,6 +246,17 @@ def verificar_placa_existe(numero_placa):
     else:
         return numero_placa
 
+def descobrir_natureza(opcao=str()):
+    if opcao == '1':
+        return 'Leve'
+    elif opcao == '2':
+        return 'Media'
+    elif opcao == '3':
+        return 'Grave'
+    elif opcao == '4':
+        return 'Gravissima'
+    else:
+        print('Ocorreu um erro inesperado, por favor tente novamente')
 
 def receber_resposta(pergunta=str(), opcoes=list()):
     resposta = str(input(pergunta)).strip()
@@ -254,6 +294,11 @@ def mostrar_menu():
         print('Ocorreu um erro inesperado, por favor tente novamente')
 
 
+def ver_dados(arquivo=list()):
+    for dado in arquivo:
+        print(dado)
+
+
 
 #Lendo os dados de um arquivo binário
 dados = carregar_bin(nome_arquivo='multas.bin')
@@ -266,7 +311,6 @@ naturezas = dados[3]
 
 
 mostrar_menu()
-#for f in dados:
-#    print(f)
-
+#valores_padroes()
+#ver_dados(dados)
 
