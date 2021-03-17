@@ -31,18 +31,40 @@ Data de Nascimento: {data_nascimento}
     resposta = receber_resposta('Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->', opcoes= ['1', '2'])
     if resposta == '1':
         motoristas[f'{cnh}'] = (f'{nome}', data_nascimento)
-        print(motoristas)
         novos_dados = [motoristas, veiculos, infracoes, naturezas]
         criar_bin(nome_arquivo='multas.bin', dados=novos_dados)
+    elif resposta == '2':
+        cadastrar_motorista()
+    else:
+        print('Ocorreu um erro inesperado, por favor tente novamente')
 
 
 def cadastrar_veiculo():
     modelo = str(input('Cadastrar um novo veículo:\nModelo: ')).strip()
-    placa = str(input('Placa (Ex. FLA 2016): ')).strip()
-    placa = str(verificar_placa(numero_placa=placa))
+    placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
+    placa = str(verificar_placa(numero_placa=placa)).upper()
+    print(placa)
     cnh_dono = str(input('CNH do proprietário: ')).strip()
     cor = str(input('Cor do veículo: '))
+    print(f'''
+Verifique as informações.
+Modelo: {modelo}
+Placa: {placa}
+CNH do Proprietário: {cnh_dono}
+Cor: {cor}
+        ''')
 
+    resposta = receber_resposta(
+        'Deseja salvar as informações em multas.bin ou alterar algum valor?\n1- Quero salvar\n2-Quero alterar um valor\n->',
+        opcoes=['1', '2'])
+    if resposta == '1':
+        veiculos[f'{placa}'] = (f'{cnh_dono}',f'{modelo}', f'{cor}')
+        novos_dados = [motoristas, veiculos, infracoes, naturezas]
+        criar_bin(nome_arquivo='multas.bin', dados=novos_dados)
+    elif resposta == '2':
+        cadastrar_veiculo()
+    else:
+        print('Ocorreu um erro inesperado, por favor tente novamente')
 
 def alterar_proprietario():
     print('altera')
@@ -80,8 +102,8 @@ def verificar_placa(numero_placa):
             placa_duplicada = False
 
     while placa_duplicada:
-        print('!!!Esse número de CNH já foi cadastrado!!!')
-        novo_numero_placa = str(input('Digite uma CNH válida: ')).strip()
+        print('!!!Essa placa já está cadastrada!!!')
+        novo_numero_placa = str(input('Digite uma placa válida: ')).strip().upper()
         for key in veiculos:
             if str(novo_numero_placa) == str(key):
                 placa_duplicada = True
@@ -168,10 +190,7 @@ infracoes = dados[2]
 naturezas = dados[3]
 
 
-#mostrar_menu()
+mostrar_menu()
 #for f in dados:
 #    print(f)
-
-
-
 
