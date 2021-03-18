@@ -64,7 +64,6 @@ def cadastrar_veiculo():
     modelo = str(input('Cadastrar um novo veículo:\nModelo: ')).strip()
     placa = str(input('Placa (Ex. FLA 2016): ')).strip().upper()
     placa = str(verificar_placa_disponivel(numero_placa=placa)).upper()
-    print(placa)
     cnh_dono = str(input('CNH: ')).strip()
     cnh_dono = str(verificar_cnh_existe(numero_cnh=cnh_dono))
     cor = str(input('Cor do veículo: '))
@@ -138,12 +137,12 @@ def cadastrar_infracao():
     natureza_infracao = descobrir_natureza(opcao=resposta)
     # Verificação dos dados feita pelo usuário
     print(f'''
-    Verifique as informações.
-    Numero da infração: {numero_infracao}
-    Data: {data_infracao}
-    Placa: {placa_infracao}
-    Dados obtidos pela placa: {veiculos[f'{placa_infracao}']}
-    Natureza da infração: {natureza_infracao}
+Verifique as informações.
+Numero da infração: {numero_infracao}
+Data: {data_infracao}
+Placa: {placa_infracao}
+Dados obtidos pela placa: {veiculos[f'{placa_infracao}']}
+Natureza da infração: {natureza_infracao}
     ''')
     #Salvar ou não os dados recebidos
     resposta = receber_resposta(
@@ -389,9 +388,9 @@ veiculos = dados[1]
 infracoes = dados[2]
 naturezas = dados[3]
 
-
 mostrar_menu()
 
 #Utilizadas para controle
 #valores_padroes()
 #ver_dados(dados)
+input()
